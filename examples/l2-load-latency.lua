@@ -8,11 +8,12 @@ local filter	= require "filter"
 local ffi	= require "ffi"
 
 function master(...)
-	local txPort, rxPort, rate = tonumberall(...)
+	local txPort, rxPort, rate, size= tonumberall(...)
 	if not txPort or not rxPort then
-		errorf("usage: txPort rxPort [rate]")
+		errorf("usage: txPort rxPort [rate[size]]")
 	end
 	rate = rate or 10000
+        size = size or 64
 	local rcWorkaround = rate > (64 * 64) / (84 * 84) * 10000 and rate < 10000
 	local rxMempool = memory.createMemPool()
 	local txDev, rxDev
@@ -33,16 +34,16 @@ function master(...)
 		txDev:getTxQueue(0):setRate(rate)
 	end
 	dpdk.launchLua("timerSlave", txPort, rxPort, 1, 1)
-	dpdk.launchLua("loadSlave", txPort, 0)
-	dpdk.launchLua("counterSlave", rxPort, 0)
+	dpdk.launchLua("loadSlave", txPort, 0, size)
+	dpdk.launchLua("counterSlave", rxPort, 0, size)
 	if rcWorkaround then
-		dpdk.launchLua("loadSlave", txPort, 2)
-		dpdk.launchLua("loadSlave", txPort, 3)
+		dpdk.launchLua("loadSlave", txPort, 2, size)
+		dpdk.launchLua("loadSlave", txPort, 3, size)
 	end
 	dpdk.waitForSlaves()
 end
 
-function loadSlave(port, queue)
+function loadSlave(port, queue, size)
 	local queue = device.get(port):getTxQueue(queue)
 	local mem = memory.createMemPool(function(buf)
 		local data = ffi.cast("uint8_t*", buf:getData())
@@ -61,7 +62,7 @@ function loadSlave(port, queue)
 	local lastSent = 0
 	local bufs = mem:bufArray(MAX_BURST_SIZE)
 	while dpdk.running() do
-		bufs:alloc(60)
+		bufs:alloc(size)
 		totalSent = totalSent + queue:send(bufs)
 		local time = dpdk.getTime()
 		if time - lastPrint > 1 then

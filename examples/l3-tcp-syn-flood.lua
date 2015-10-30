@@ -34,14 +34,14 @@ function loadSlave(port, queue, minA, numIPs)
 	end
 
 	-- min TCP packet size for IPv6 is 74 bytes (+ CRC)
-	local packetLen = ipv4 and 60 or 74
+	local packetLen = ipv4 and 60  or 74
 	
 	--continue normally
 	local queue = device.get(port):getTxQueue(queue)
 	local mem = memory.createMemPool(function(buf)
 		buf:getTcpPacket(ipv4):fill{ 
-			ethSrc="90:e2:ba:2c:cb:02", ethDst="90:e2:ba:35:b5:81", 
-			ipDst="192.168.1.1", 
+			-- ethSrc="90:e2:ba:2c:cb:02", ethDst="90:e2:ba:35:b5:81", 
+			ipDst="10.11.1.17", 
 			ip6Dst="fd06::1",
 			tcpSyn=1,
 			tcpSeqNumber=1,

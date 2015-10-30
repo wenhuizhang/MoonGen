@@ -4,7 +4,7 @@
 DPDKConfig {
 	-- configure the cores to use, either as a bitmask or as a list
 	-- default: all cores
-	--cores = 0x0F, -- use the first 4 cores
+	--cores = 0x1f, -- use the first 4 cores
 	--cores = {0, 1, 3, 4},
 	
 	-- the number of memory channels (defaults to auto-detect)

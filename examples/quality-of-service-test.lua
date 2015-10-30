@@ -1,13 +1,13 @@
 --- This script implements a simple QoS test by generating two flows and measuring their latencies.
-local dpdk		= require "dpdk"
+local dpdk	= require "dpdk"
 local memory	= require "memory"
 local device	= require "device"
-local ts		= require "timestamping"
+local ts	= require "timestamping"
 local filter	= require "filter"
-local stats		= require "stats"
-local hist		= require "histogram"
+local stats	= require "stats"
+local hist	= require "histogram"
 
-local PKT_SIZE = 124
+local PKT_SIZE = 64
 
 function master(txPort, rxPort, fgRate, bgRate)
 	if not txPort or not rxPort then

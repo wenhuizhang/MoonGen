@@ -88,7 +88,8 @@ function counterSlave(port)
 		local elapsed = dpdk.getTime() - time
 		local pkts = dev:getRxStats(port)
 		total = total + pkts
-		printf("Received %d packets, current rate %.2f Mpps", total, pkts / elapsed / 10^6)
+--		printf("Received %d packets, current rate %.2f Mpps,     %.2f", total, pkts / elapsed / 10^6, pkts / elapsed / 10^6)
+		printf("  %.2f", pkts / elapsed / 10^6)
 	end
 	printf("Received %d packets", total)
 end
